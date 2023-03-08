@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {createBrowserRouter, Outlet, RouterProvider, useRouteError} from "react-router-dom";
+import {createBrowserRouter, Outlet, redirect, RouterProvider, useRouteError} from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import {LoadingProvider} from "./utils/LoadingProvider";
 
 const Layout = () => {
    return <></>;
@@ -27,7 +28,11 @@ const RootErrorBoundary = () => {
 const router = createBrowserRouter([
    {
       path: "/",
-      element: <Login/>
+      loader: () => redirect("/login"),
+   },
+   {
+      path: "/login",
+      element: <Login/>,
    },
    {
       path: "/register",
@@ -49,7 +54,11 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-     <RouterProvider router={router}/>
+     <div style={{height: '100vh'}}>
+        <LoadingProvider>
+           <RouterProvider router={router}/>
+        </LoadingProvider>
+     </div>
   </React.StrictMode>
 );
 

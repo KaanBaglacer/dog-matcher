@@ -1,6 +1,6 @@
-import React, {createRef} from 'react';
+import React from 'react';
 import styled from "styled-components";
-import styles from "./Login.css";
+import styles from "./Login.module.css";
 import {Form, NavLink} from "react-router-dom";
 import Label from "../components/UI/Label.jsx";
 import Input from "../components/UI/Input.jsx";
@@ -20,7 +20,7 @@ const RegisterLayout = styled.div`
 
 const Register = (props) => {
 
-   const {register, handleSubmit, errors} = useForm({
+   const {register, handleSubmit} = useForm({
       defaultValues: {
          name: '',
          surname: '',
@@ -30,20 +30,8 @@ const Register = (props) => {
       },
    });
 
-   const nameRef = createRef();
-   const surnameRef = createRef();
-   const usernameRef = createRef();
-   const passwordRef = createRef();
-   const emailRef = createRef();
-
-   const submitRegister = async () => {
-      await axios.post(`${baseUrl}/auth/signup`, {
-         username: usernameRef.current.value,
-         password: passwordRef.current.value,
-         email: emailRef.current.value,
-         name: nameRef.current.value,
-         surname: surnameRef.current.value,
-      });
+   const submitRegister = async (data) => {
+      await axios.post(`${baseUrl}/auth/signup`, data);
    };
 
    return <RegisterLayout>
@@ -51,15 +39,15 @@ const Register = (props) => {
          <Form className={styles.loginForm} onSubmit={handleSubmit(submitRegister)}>
             <H1 margin={"0.67em 0"}>Register</H1>
             <Label htmlFor={"name"}>Name:</Label>
-            <Input ref={nameRef} width={'300px'} id={"name"}></Input>
+            <Input {...register("name")} width={'300px'} id={"name"}></Input>
             <Label htmlFor={"surname"}>Surname:</Label>
-            <Input ref={surnameRef} width={'300px'} id={"surname"}></Input>
+            <Input {...register("surname")} width={'300px'} id={"surname"}></Input>
             <Label htmlFor={"username"}>Username:</Label>
-            <Input ref={usernameRef} width={'300px'} id={"username"}></Input>
+            <Input {...register("username")} width={'300px'} id={"username"}></Input>
             <Label htmlFor={"password"}>Password:</Label>
-            <Input ref={passwordRef} width={'300px'} id={"password"} type={"password"}></Input>
+            <Input {...register("password")} width={'300px'} id={"password"} type={"password"}></Input>
             <Label htmlFor={"email"}>Email:</Label>
-            <Input ref={emailRef} width={'300px'} id={"email"} type={"email"}></Input>
+            <Input {...register("email")} width={'300px'} id={"email"} type={"email"}></Input>
             <Input id={"submit"} type={"submit"} value={"Sign Up!"} width={"125px"} style={{margin: '5px'}}/>
             <NavLink to={"/"}>Go to login</NavLink>
          </Form>
