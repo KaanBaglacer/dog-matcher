@@ -2,13 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {createBrowserRouter, Outlet, redirect, RouterProvider, useRouteError} from "react-router-dom";
+import {createBrowserRouter, Navigate, Outlet, RouterProvider, useRouteError} from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import {LoadingProvider} from "./utils/LoadingProvider";
+import DogMatching from "./pages/DogMatching";
+import {Provider, useSelector} from "react-redux";
+import store from "./store";
+import {LoadingProvider} from "./utils/Loading";
 
 const Layout = () => {
-   return <></>;
+   return <div>
+      <nav></nav>
+      <Outlet/>
+      <footer></footer>
+   </div>;
 }
 
 const RootErrorBoundary = () => {
@@ -24,11 +31,16 @@ const RootErrorBoundary = () => {
    );
 }
 
+const RouteNavigator = () => {
+   const isAuth = useSelector(state => state.auth.isAuth);
+   const url = isAuth ? "/app/dog-matching" : "/login";
+   return <Navigate to={url}/>;
+};
 
 const router = createBrowserRouter([
    {
       path: "/",
-      loader: () => redirect("/login"),
+      element: <RouteNavigator/>
    },
    {
       path: "/login",
@@ -39,27 +51,30 @@ const router = createBrowserRouter([
       element: <Register/>,
    },
    {
-      path: "/home",
+      path: "/app",
       element: <Layout/>,
+      errorElement: <RootErrorBoundary/>,
       children: [
          {
-            path: "",
-            element: <Outlet/>,
-            errorElement: <RootErrorBoundary/>,
+            path: "dog-matching",
+            element: <DogMatching/>,
          }
       ]
-   }
+   },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-     <div style={{height: '100vh'}}>
-        <LoadingProvider>
-           <RouterProvider router={router}/>
-        </LoadingProvider>
-     </div>
-  </React.StrictMode>
+   <React.StrictMode>
+      <Provider store={store}>
+         <div style={{height: '100vh'}}>
+            <LoadingProvider>
+               <RouterProvider router={router}/>
+            </LoadingProvider>
+         </div>
+      </Provider>
+
+   </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

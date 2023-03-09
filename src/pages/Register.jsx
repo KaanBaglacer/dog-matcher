@@ -5,10 +5,10 @@ import {Form, NavLink} from "react-router-dom";
 import Label from "../components/UI/Label.jsx";
 import Input from "../components/UI/Input.jsx";
 import Card from "../components/UI/Card.jsx";
-import axios from "axios";
-import {baseUrl} from "../utils/constants.jsx";
 import H1 from "../components/UI/H1.jsx";
 import {useForm} from "react-hook-form";
+import {useDispatch} from "react-redux";
+import {registerRequest} from "../store/auth-slice";
 
 const RegisterLayout = styled.div`
   display: flex;
@@ -18,20 +18,14 @@ const RegisterLayout = styled.div`
   background: rebeccapurple;
 `;
 
-const Register = (props) => {
+const Register = () => {
 
-   const {register, handleSubmit} = useForm({
-      defaultValues: {
-         name: '',
-         surname: '',
-         username: '',
-         password: '',
-         email: '',
-      },
-   });
+   const defaultValues = {name: '', surname: '', username: '', password: '', email: ''};
 
+   const {register, handleSubmit} = useForm({defaultValues: defaultValues});
+   const dispatch = useDispatch();
    const submitRegister = async (data) => {
-      await axios.post(`${baseUrl}/auth/signup`, data);
+      dispatch(registerRequest(data));
    };
 
    return <RegisterLayout>

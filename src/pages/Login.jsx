@@ -1,13 +1,13 @@
-import React, {createRef, useContext} from "react";
+import React from "react";
 import Card from "../components/UI/Card.jsx";
 import Input from "../components/UI/Input.jsx";
 import styled from "styled-components";
 import styles from "./Login.module.css";
 import Label from "../components/UI/Label.jsx";
-import {Form, NavLink} from "react-router-dom";
-import axios from "axios";
-import {baseUrl} from "../utils/constants.jsx";
-import {LoadingContext} from "../utils/LoadingProvider";
+import {Form, NavLink, useNavigate} from "react-router-dom";
+import {useForm} from "react-hook-form";
+import {useDispatch} from "react-redux";
+import {loginRequest} from "../store/auth-slice";
 
 const LoginLayout = styled.div`
   display: flex;
@@ -24,33 +24,23 @@ const Logo = styled.img`
 
 const Login = (props) => {
 
-   const usernameRef = createRef();
-   const passwordRef = createRef();
-   const loadingContext = useContext(LoadingContext);
+   const navigate = useNavigate();
+   const {register, handleSubmit} = useForm({defaultValues: {username: '', password: ''}});
+   const dispatch = useDispatch();
 
-   const handleSubmit = async (event) => {
-      event.stopPropagation();
-      loadingContext.showLoading();
-      try {
-         await axios.post(`${baseUrl}/auth/login`, {
-            username: usernameRef.current.value,
-            password: passwordRef.current.value,
-         });
-      } catch (e) {
-         console.log(e);
-      } finally {
-         loadingContext.hideLoading();
-      }
+   const submit = async (data) => {
+      await dispatch(loginRequest(data));
+      navigate('/app/dog-matching');
    };
 
    return <LoginLayout>
       <Card className={styles.loginCard} height={'550px'}>
-         <Form className={styles.loginForm} onSubmit={handleSubmit}>
+         <Form className={styles.loginForm} onSubmit={handleSubmit(submit)}>
             <Logo src="Logo.png" alt="Dog Matcher Logo"/>
             <Label htmlFor={"username"}>Username:</Label>
-            <Input ref={usernameRef} width={'300px'} id={"username"}></Input>
+            <Input {...register("username")} width={'300px'} id={"username"}></Input>
             <Label htmlFor={"password"}>Password:</Label>
-            <Input ref={passwordRef} width={'300px'} id={"password"} type={"password"}></Input>
+            <Input {...register("password")} width={'300px'} id={"password"} type={"password"}></Input>
             <Input id={"submit"} type={"submit"} value={"Login"} style={{margin: '5px'}}/>
             <NavLink to={"/register"}>Register</NavLink>
          </Form>
